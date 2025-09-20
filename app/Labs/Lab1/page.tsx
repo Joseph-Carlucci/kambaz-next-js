@@ -1,5 +1,6 @@
 "use client"
 import React from 'react';
+import Image from 'next/image';
 
 export default function Lab1() {
     return (
@@ -39,7 +40,7 @@ export default function Lab1() {
                 </ol>
                 My favorite recipe:
                 <ol id="wd-your-favorite-recipe">
-                    <li>In a large bowl, combine 2 pounds ground beef, 1 cup breadcrumbs, 2 eggs, 1 diced onion, 2 minced garlic cloves, ½ cup milk, and salt and pepper. Mix with your hands until just combined (don't overmix).</li>
+                    <li>In a large bowl, combine 2 pounds ground beef, 1 cup breadcrumbs, 2 eggs, 1 diced onion, 2 minced garlic cloves, ½ cup milk, and salt and pepper. Mix with your hands until just combined (don&apos;t overmix).</li>
                     <li>Shape the mixture into a loaf and place in a greased 9x5 inch loaf pan or on a baking sheet. Spread ½ cup ketchup (or mix ketchup with brown sugar and mustard) over the top.</li>
                     <li>Bake at 350°F (175°C) for about 1 hour, or until the internal temperature reaches 160°F. Let rest for 10 minutes before slicing and serving.</li>
                 </ol>
@@ -48,7 +49,7 @@ export default function Lab1() {
                 <ul id="wd-my-books">
                     <li>Dune</li>
                     <li>Lord of the Rings</li>
-                    <li>Ender's Game</li>
+                    <li>Ender&apos;s Game</li>
                     <li>Red Mars</li>
                     <li>The Forever War</li>
                 </ul>
@@ -143,11 +144,11 @@ export default function Lab1() {
             <div id="wd-images">
                 <h4>Image tag</h4>
                 Loading an image from the internet: <br />
-                <img id="wd-starship" width="400px" src="https://www.staradvertiser.com/wp-content/uploads/2021/08/web1_Starship-gap2.jpg" />
+                <Image id="wd-starship" width={400} height={300} src="https://www.staradvertiser.com/wp-content/uploads/2021/08/web1_Starship-gap2.jpg" alt="Starship rocket" />
                 <br />
                 Loading a local image:
                 <br />
-                <img id="wd-teslabot" src="/images/teslabot.jpg" height="200px" /></div>
+                <Image id="wd-teslabot" src="/images/teslabot.jpg" width={300} height={200} alt="Tesla Bot robot" /></div>
             <div id="wd-forms">
                 <h4>Form Elements</h4>
                 <form id="wd-text-fields">
