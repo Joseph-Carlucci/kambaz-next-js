@@ -20,6 +20,10 @@ export default function Labs() {
                     <Link href="/" id="kambaz-link">
                         Lab 3: JavaScript Fundamentals </Link>
                 </li>
+                <li>
+                    <Link href="https://github.com/Joseph-Carlucci/kambaz-next-js" id="wd-github">
+                        GitHub Repository </Link>
+                </li>
             </ul>
         </div>
     );
