@@ -1,12 +1,18 @@
+"use client"
+import { useParams } from "next/navigation";
+import * as db from "../../../../Database";
 import { FormControl, FormLabel, FormSelect, FormCheck, Button, FormGroup } from "react-bootstrap";
+import Link from "next/link";
 
 export default function AssignmentEditor() {
+    const { cid, aid } = useParams();
+    const assignment = db.assignments.find((a: any) => a._id === aid);
     return (
         <div id="wd-assignments-editor">
-            <FormLabel htmlFor="wd-name">Assignment Name</FormLabel>
+            <FormLabel htmlFor="wd-name">{assignment?.title}</FormLabel>
             <FormControl id="wd-name" defaultValue="A1 - ENV + HTML" className="mb-3" />
 
-            <FormLabel htmlFor="wd-description">Description</FormLabel>
+            <FormLabel htmlFor="wd-description">Descriptions:</FormLabel>
             <FormControl
                 as="textarea"
                 id="wd-description"
@@ -16,7 +22,7 @@ export default function AssignmentEditor() {
             />
 
             <div className="mb-3 row">
-                <FormLabel htmlFor="wd-points" className="col-sm-2 col-form-label text-end">Points</FormLabel>
+                <FormLabel htmlFor="wd-points" className="col-sm-2 col-form-label text-end">defaultValue=Points:</FormLabel>
                 <div className="col-sm-10">
                     <FormControl id="wd-points" defaultValue={100} />
                 </div>
@@ -64,21 +70,21 @@ export default function AssignmentEditor() {
             </div>
 
             <div className="mb-3 row">
-                <FormLabel htmlFor="wd-due-date" className="col-sm-2 col-form-label text-end">Due</FormLabel>
+                <FormLabel htmlFor="wd-due-date" className="col-sm-2 col-form-label text-end">defaultValue=Due:</FormLabel>
                 <div className="col-sm-10">
                     <FormControl type="date" id="wd-due-date" defaultValue="2024-05-13" />
                 </div>
             </div>
 
             <div className="mb-3 row">
-                <FormLabel htmlFor="wd-available-from" className="col-sm-2 col-form-label text-end">Available from</FormLabel>
+                <FormLabel htmlFor="wd-available-from" className="col-sm-2 col-form-label text-end">defaultValue=Available From:</FormLabel>
                 <div className="col-sm-10">
                     <FormControl type="date" id="wd-available-from" defaultValue="2024-05-06" />
                 </div>
             </div>
 
             <div className="mb-3 row">
-                <FormLabel htmlFor="wd-available-until" className="col-sm-2 col-form-label text-end">Until</FormLabel>
+                <FormLabel htmlFor="wd-available-until" className="col-sm-2 col-form-label text-end">defaultValue=Available Until:</FormLabel>
                 <div className="col-sm-10">
                     <FormControl type="date" id="wd-available-until" defaultValue="2024-05-20" />
                 </div>
@@ -86,8 +92,12 @@ export default function AssignmentEditor() {
 
             <hr />
             <div className="float-end">
-                <Button variant="secondary" className="me-2">Cancel</Button>
-                <Button variant="danger">Save</Button>
+                <Link href={`/Courses/${cid}/Assignments`}>
+                    <Button variant="secondary" className="me-2">Cancel</Button>
+                </Link>
+                <Link href={`/Courses/${cid}/Assignments/${aid}`}>
+                    <Button variant="danger">Save</Button>
+                </Link>
             </div>
         </div>
     );

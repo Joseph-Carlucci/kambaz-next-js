@@ -1,3 +1,6 @@
+"use client"
+import { useParams } from "next/navigation";
+import * as db from "../../../Database";
 import Link from "next/link";
 import { Button, InputGroup, FormControl, ListGroup, ListGroupItem } from "react-bootstrap";
 import { BsGripVertical, BsPlus } from "react-icons/bs";
@@ -6,6 +9,8 @@ import { FaSearch } from "react-icons/fa";
 import InputGroupText from "react-bootstrap/esm/InputGroupText";
 
 export default function Assignments() {
+    const { cid } = useParams();
+    const assignments = db.assignments;
     return (
         <div id="wd-assignments">
             <InputGroup className="mb-3">
@@ -37,47 +42,17 @@ export default function Assignments() {
                     </span>
                 </ListGroupItem>
 
-                <ListGroupItem className="wd-assignment-list-item p-3 ps-1">
-                    <BsGripVertical className="me-2 fs-3" />
-                    <Link href="/Courses/1234/Assignments/123" className="wd-assignment-link text-decoration-none text-dark">
-                        <strong>A1 - ENV + HTML</strong>
+                {assignments
+                .filter((assignment: any) => assignment.course === cid)
+                .map((assignment: any) => (
+                    <ListGroupItem key={assignment._id}>
+                    <Link href={`/Courses/${cid}/Assignments/${assignment._id}`} className="text-decoration-none text-dark">
+                        <div>{assignment.title}</div>
+                        <div>Due: {assignment.due}</div>
+                        <div>Points: {assignment.points}</div>
                     </Link>
-                    <span className="float-end">
-                        <IoEllipsisVertical className="fs-4" />
-                    </span>
-                    <br />
-                    <span className="ms-5 text-danger">Multiple Modules</span> | <strong>Not available until</strong> May 6 at 12:00am |
-                    <br />
-                    <span className="ms-5"><strong>Due</strong> May 13 at 11:59pm | 100 pts</span>
-                </ListGroupItem>
-
-                <ListGroupItem className="wd-assignment-list-item p-3 ps-1">
-                    <BsGripVertical className="me-2 fs-3" />
-                    <Link href="/Courses/1234/Assignments/124" className="wd-assignment-link text-decoration-none text-dark">
-                        <strong>A2 - CSS + BOOTSTRAP</strong>
-                    </Link>
-                    <span className="float-end">
-                        <IoEllipsisVertical className="fs-4" />
-                    </span>
-                    <br />
-                    <span className="ms-5 text-danger">Multiple Modules</span> | <strong>Not available until</strong> May 13 at 12:00am |
-                    <br />
-                    <span className="ms-5"><strong>Due</strong> May 20 at 11:59pm | 100 pts</span>
-                </ListGroupItem>
-
-                <ListGroupItem className="wd-assignment-list-item p-3 ps-1">
-                    <BsGripVertical className="me-2 fs-3" />
-                    <Link href="/Courses/1234/Assignments/125" className="wd-assignment-link text-decoration-none text-dark">
-                        <strong>A3 - JAVASCRIPT + REACT</strong>
-                    </Link>
-                    <span className="float-end">
-                        <IoEllipsisVertical className="fs-4" />
-                    </span>
-                    <br />
-                    <span className="ms-5 text-danger">Multiple Modules</span> | <strong>Not available until</strong> May 20 at 12:00am |
-                    <br />
-                    <span className="ms-5"><strong>Due</strong> May 27 at 11:59pm | 100 pts</span>
-                </ListGroupItem>
+                    </ListGroupItem>
+                ))}
             </ListGroup>
         </div>
     );
