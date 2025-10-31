@@ -23,6 +23,7 @@ export default function Dashboard() {
     });
 
     const isEnrolled = (courseId: string) => {
+        if (!currentUser) return false;
         return enrollments.some(
             (enrollment: any) =>
                 enrollment.user === currentUser._id &&
@@ -31,10 +32,12 @@ export default function Dashboard() {
     };
 
     const handleEnroll = (courseId: string) => {
+        if (!currentUser) return;
         dispatch(enrollInCourse({ userId: currentUser._id, courseId }));
     };
 
     const handleUnenroll = (courseId: string) => {
+        if (!currentUser) return;
         dispatch(unenrollFromCourse({ userId: currentUser._id, courseId }));
     };
 
