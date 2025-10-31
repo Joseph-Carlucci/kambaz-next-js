@@ -20,11 +20,13 @@ export default function Labs() {
                     <Link href="/Labs/Lab4" id="wd-lab4-link">
                         Lab 4: Managing State </Link>
                 </li>
-                <li>
-                    <Link href="https://github.com/Joseph-Carlucci/kambaz-next-js" id="wd-github">
-                        GitHub Repository </Link>
-                </li>
             </ul>
+            <p>Joseph Carlucci</p>
+            <p>
+                <Link href="https://github.com/Joseph-Carlucci/kambaz-next-js" id="wd-github">
+                    GitHub Repository
+                </Link>
+            </p>
         </div>
     );
 }

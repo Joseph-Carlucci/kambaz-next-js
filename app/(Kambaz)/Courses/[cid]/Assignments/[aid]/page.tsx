@@ -1,32 +1,76 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 "use client"
-import { useParams } from "next/navigation";
-import * as db from "../../../../Database";
-import { FormControl, FormLabel, FormSelect, FormCheck, Button, FormGroup } from "react-bootstrap";
+import { useParams, useRouter } from "next/navigation";
+import { FormControl, FormLabel, FormSelect, FormCheck, Button } from "react-bootstrap";
 import Link from "next/link";
+import { useSelector, useDispatch } from "react-redux";
+import { addAssignment, updateAssignment } from "../reducer";
+import { useState, useEffect } from "react";
 
 export default function AssignmentEditor() {
     const { cid, aid } = useParams();
-    const assignment = db.assignments.find((a: any) => a._id === aid);
+    const router = useRouter();
+    const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+    const dispatch = useDispatch();
+    
+    const [assignment, setAssignment] = useState<any>({
+        title: "",
+        description: "",
+        points: 100,
+        due: "",
+        availableFrom: "",
+        availableUntil: "",
+        course: cid
+    });
+
+    useEffect(() => {
+        if (aid !== "new") {
+            const existingAssignment = assignments.find((a: any) => a._id === aid);
+            if (existingAssignment) {
+                setAssignment(existingAssignment);
+            }
+        }
+    }, [aid, assignments]);
+
+    const handleSave = () => {
+        if (aid === "new") {
+            dispatch(addAssignment(assignment));
+        } else {
+            dispatch(updateAssignment(assignment));
+        }
+        router.push(`/Courses/${cid}/Assignments`);
+    };
+
     return (
         <div id="wd-assignments-editor">
-            <FormLabel htmlFor="wd-name">{assignment?.title}</FormLabel>
-            <FormControl id="wd-name" defaultValue="A1 - ENV + HTML" className="mb-3" />
+            <FormLabel htmlFor="wd-name">Assignment Name</FormLabel>
+            <FormControl 
+                id="wd-name" 
+                value={assignment.title} 
+                onChange={(e) => setAssignment({ ...assignment, title: e.target.value })}
+                className="mb-3" 
+            />
 
-            <FormLabel htmlFor="wd-description">Descriptions:</FormLabel>
+            <FormLabel htmlFor="wd-description">Description</FormLabel>
             <FormControl
                 as="textarea"
                 id="wd-description"
                 rows={5}
                 className="mb-3"
-                defaultValue="The assignment is available online Submit a link to the landing page of your Web application running on Netlify. The landing page should include the following: Your full name and section Links to each of the lab assignments Link to the Kanbas application Links to all relevant source code repositories The Kambas application should include a link to navigate back to the landing page."
+                value={assignment.description}
+                onChange={(e) => setAssignment({ ...assignment, description: e.target.value })}
             />
 
             <div className="mb-3 row">
-                <FormLabel htmlFor="wd-points" className="col-sm-2 col-form-label text-end">defaultValue=Points:</FormLabel>
+                <FormLabel htmlFor="wd-points" className="col-sm-2 col-form-label text-end">Points</FormLabel>
                 <div className="col-sm-10">
-                    <FormControl id="wd-points" defaultValue={100} />
+                    <FormControl 
+                        id="wd-points" 
+                        type="number"
+                        value={assignment.points} 
+                        onChange={(e) => setAssignment({ ...assignment, points: parseInt(e.target.value) })}
+                    />
                 </div>
             </div>
 
@@ -72,23 +116,38 @@ export default function AssignmentEditor() {
             </div>
 
             <div className="mb-3 row">
-                <FormLabel htmlFor="wd-due-date" className="col-sm-2 col-form-label text-end">defaultValue=Due:</FormLabel>
+                <FormLabel htmlFor="wd-due-date" className="col-sm-2 col-form-label text-end">Due</FormLabel>
                 <div className="col-sm-10">
-                    <FormControl type="date" id="wd-due-date" defaultValue="2024-05-13" />
+                    <FormControl 
+                        type="date" 
+                        id="wd-due-date" 
+                        value={assignment.due} 
+                        onChange={(e) => setAssignment({ ...assignment, due: e.target.value })}
+                    />
                 </div>
             </div>
 
             <div className="mb-3 row">
-                <FormLabel htmlFor="wd-available-from" className="col-sm-2 col-form-label text-end">defaultValue=Available From:</FormLabel>
+                <FormLabel htmlFor="wd-available-from" className="col-sm-2 col-form-label text-end">Available From</FormLabel>
                 <div className="col-sm-10">
-                    <FormControl type="date" id="wd-available-from" defaultValue="2024-05-06" />
+                    <FormControl 
+                        type="date" 
+                        id="wd-available-from" 
+                        value={assignment.availableFrom} 
+                        onChange={(e) => setAssignment({ ...assignment, availableFrom: e.target.value })}
+                    />
                 </div>
             </div>
 
             <div className="mb-3 row">
-                <FormLabel htmlFor="wd-available-until" className="col-sm-2 col-form-label text-end">defaultValue=Available Until:</FormLabel>
+                <FormLabel htmlFor="wd-available-until" className="col-sm-2 col-form-label text-end">Available Until</FormLabel>
                 <div className="col-sm-10">
-                    <FormControl type="date" id="wd-available-until" defaultValue="2024-05-20" />
+                    <FormControl 
+                        type="date" 
+                        id="wd-available-until" 
+                        value={assignment.availableUntil} 
+                        onChange={(e) => setAssignment({ ...assignment, availableUntil: e.target.value })}
+                    />
                 </div>
             </div>
 
@@ -97,9 +156,7 @@ export default function AssignmentEditor() {
                 <Link href={`/Courses/${cid}/Assignments`}>
                     <Button variant="secondary" className="me-2">Cancel</Button>
                 </Link>
-                <Link href={`/Courses/${cid}/Assignments/${aid}`}>
-                    <Button variant="danger">Save</Button>
-                </Link>
+                <Button variant="danger" onClick={handleSave}>Save</Button>
             </div>
         </div>
     );

@@ -2,17 +2,36 @@
 
 "use client"
 import { useParams } from "next/navigation";
-import * as db from "../../../Database";
 import Link from "next/link";
-import { Button, InputGroup, FormControl, ListGroup, ListGroupItem } from "react-bootstrap";
+import { Button, InputGroup, FormControl, ListGroup, ListGroupItem, Modal } from "react-bootstrap";
 import { BsGripVertical, BsPlus } from "react-icons/bs";
 import { IoEllipsisVertical } from "react-icons/io5";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaTrash } from "react-icons/fa";
 import InputGroupText from "react-bootstrap/esm/InputGroupText";
+import { useSelector, useDispatch } from "react-redux";
+import { deleteAssignment } from "./reducer";
+import { useState } from "react";
 
 export default function Assignments() {
     const { cid } = useParams();
-    const assignments = db.assignments;
+    const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+    const dispatch = useDispatch();
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [assignmentToDelete, setAssignmentToDelete] = useState<string | null>(null);
+
+    const handleDeleteClick = (assignmentId: string) => {
+        setAssignmentToDelete(assignmentId);
+        setShowDeleteDialog(true);
+    };
+
+    const confirmDelete = () => {
+        if (assignmentToDelete) {
+            dispatch(deleteAssignment(assignmentToDelete));
+        }
+        setShowDeleteDialog(false);
+        setAssignmentToDelete(null);
+    };
+
     return (
         <div id="wd-assignments">
             <InputGroup className="mb-3">
@@ -26,9 +45,11 @@ export default function Assignments() {
             </InputGroup>
 
             <div className="mb-3">
-                <Button variant="secondary" className="float-end ms-2" id="wd-add-assignment">
-                    <BsPlus /> Assignment
-                </Button>
+                <Link href={`/Courses/${cid}/Assignments/new`}>
+                    <Button variant="secondary" className="float-end ms-2" id="wd-add-assignment">
+                        <BsPlus /> Assignment
+                    </Button>
+                </Link>
                 <Button variant="secondary" className="float-end" id="wd-add-assignment-group">
                     <BsPlus /> Group
                 </Button>
@@ -47,15 +68,40 @@ export default function Assignments() {
                 {assignments
                 .filter((assignment: any) => assignment.course === cid)
                 .map((assignment: any) => (
-                    <ListGroupItem key={assignment._id}>
-                    <Link href={`/Courses/${cid}/Assignments/${assignment._id}`} className="text-decoration-none text-dark">
-                        <div>{assignment.title}</div>
-                        <div>Due: {assignment.due}</div>
-                        <div>Points: {assignment.points}</div>
-                    </Link>
+                    <ListGroupItem key={assignment._id} className="d-flex justify-content-between align-items-start">
+                        <Link href={`/Courses/${cid}/Assignments/${assignment._id}`} className="text-decoration-none text-dark flex-grow-1">
+                            <div><strong>{assignment.title}</strong></div>
+                            <div className="text-muted">Due: {assignment.due}</div>
+                            <div className="text-muted">Points: {assignment.points}</div>
+                        </Link>
+                        <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleDeleteClick(assignment._id);
+                            }}
+                        >
+                            <FaTrash />
+                        </Button>
                     </ListGroupItem>
                 ))}
             </ListGroup>
+
+            <Modal show={showDeleteDialog} onHide={() => setShowDeleteDialog(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to remove this assignment?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowDeleteDialog(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={confirmDelete}>
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }
