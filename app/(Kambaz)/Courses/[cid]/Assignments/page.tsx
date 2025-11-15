@@ -9,8 +9,9 @@ import { IoEllipsisVertical } from "react-icons/io5";
 import { FaSearch, FaTrash } from "react-icons/fa";
 import InputGroupText from "react-bootstrap/esm/InputGroupText";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteAssignment } from "./reducer";
-import { useState } from "react";
+import { setAssignments } from "./reducer";
+import { useState, useEffect } from "react";
+import * as client from "../../client";
 
 export default function Assignments() {
     const { cid } = useParams();
@@ -19,14 +20,24 @@ export default function Assignments() {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [assignmentToDelete, setAssignmentToDelete] = useState<string | null>(null);
 
+    const fetchAssignments = async () => {
+        const assignments = await client.findAssignmentsForCourse(cid as string);
+        dispatch(setAssignments(assignments));
+    };
+
+    useEffect(() => {
+        fetchAssignments();
+    }, []);
+
     const handleDeleteClick = (assignmentId: string) => {
         setAssignmentToDelete(assignmentId);
         setShowDeleteDialog(true);
     };
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
         if (assignmentToDelete) {
-            dispatch(deleteAssignment(assignmentToDelete));
+            await client.deleteAssignment(assignmentToDelete);
+            dispatch(setAssignments(assignments.filter((a: any) => a._id !== assignmentToDelete)));
         }
         setShowDeleteDialog(false);
         setAssignmentToDelete(null);
@@ -65,9 +76,7 @@ export default function Assignments() {
                     </span>
                 </ListGroupItem>
 
-                {assignments
-                .filter((assignment: any) => assignment.course === cid)
-                .map((assignment: any) => (
+                {assignments.map((assignment: any) => (
                     <ListGroupItem key={assignment._id} className="d-flex justify-content-between align-items-start">
                         <Link href={`/Courses/${cid}/Assignments/${assignment._id}`} className="text-decoration-none text-dark flex-grow-1">
                             <div><strong>{assignment.title}</strong></div>
