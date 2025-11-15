@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import * as client from "../../client";
 import { useParams } from "next/navigation";
 import { ListGroup, ListGroupItem, FormControl } from "react-bootstrap";
@@ -12,12 +12,9 @@ import { BsGripVertical } from "react-icons/bs";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setModules,
-  addModule,
   editModule,
   updateModule,
-  deleteModule,
 } from "./reducer";
-import { on } from "events";
 
 export default function Modules() {
   const { cid } = useParams();
@@ -40,17 +37,18 @@ export default function Modules() {
   const onCreateModuleForCourse = async () => {
     if (!cid) return;
     const newModule = { name: moduleName, course: cid };
-    const module = await client.createModuleForCourse(cid as string, newModule);
-    dispatch(setModules([...modules, module]));
+    const createdModule = await client.createModuleForCourse(cid as string, newModule);
+    dispatch(setModules([...modules, createdModule]));
   };
 
-  const fetchModules = async () => {
-    const modules = await client.findModulesForCourse(cid as string);
-    dispatch(setModules(modules));
-  };
+  const fetchModules = useCallback(async () => {
+    const fetchedModules = await client.findModulesForCourse(cid as string);
+    dispatch(setModules(fetchedModules));
+  }, [cid, dispatch]);
+
   useEffect(() => {
     fetchModules();
-  }, []);
+  }, [fetchModules]);
 
   return (
     <div>
