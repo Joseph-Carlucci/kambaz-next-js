@@ -16,3 +16,12 @@ export const unenrollFromCourse = async (courseId: string) => {
   );
   return response.data;
 };
+
+const USERS_API = `${HTTP_SERVER}/api/users`;
+
+export const findUserEnrollments = async () => {
+  const response = await axiosWithCredentials.get(
+    `${USERS_API}/current/enrollments`
+  );
+  return response.data;
+};

@@ -18,7 +18,7 @@ import {
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { addNewCourse, deleteCourse, updateCourse } from "../Courses/reducer";
-import { enrollInCourse, unenrollFromCourse } from "../Enrollments/reducer";
+import { setEnrollments } from "../Enrollments/reducer";
 
 export default function Dashboard() {
   const { courses } = useSelector((state: any) => state.coursesReducer);
@@ -38,14 +38,26 @@ export default function Dashboard() {
 
   const fetchCourses = async () => {
     try {
-      const courses = await client.findMyCourses();
+      const courses = await client.fetchAllCourses();
       dispatch(setCourses(courses));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchEnrollments = async () => {
+    try {
+      const enrollments = await enrollmentsClient.findUserEnrollments();
+      dispatch(setEnrollments(enrollments));
     } catch (error) {
       console.error(error);
     }
   };
   useEffect(() => {
     fetchCourses();
+    if (currentUser) {
+      fetchEnrollments();
+    }
   }, [currentUser]);
 
   const onAddNewCourse = async () => {
@@ -83,16 +95,22 @@ export default function Dashboard() {
 
   const handleEnroll = async (courseId: string) => {
     if (!currentUser) return;
-    await enrollmentsClient.enrollInCourse(courseId);
-    dispatch(enrollInCourse({ userId: currentUser._id, courseId }));
-    fetchCourses();
+    try {
+      await enrollmentsClient.enrollInCourse(courseId);
+      await fetchEnrollments();
+    } catch (error) {
+      console.error("Error enrolling in course:", error);
+    }
   };
 
   const handleUnenroll = async (courseId: string) => {
     if (!currentUser) return;
-    await enrollmentsClient.unenrollFromCourse(courseId);
-    dispatch(unenrollFromCourse({ userId: currentUser._id, courseId }));
-    fetchCourses();
+    try {
+      await enrollmentsClient.unenrollFromCourse(courseId);
+      await fetchEnrollments();
+    } catch (error) {
+      console.error("Error unenrolling from course:", error);
+    }
   };
 
   return (
